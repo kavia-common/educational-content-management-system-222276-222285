@@ -1,48 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import './components/layout/Layout.css';
+import Header from './components/layout/Header';
+import Sidebar from './components/layout/Sidebar';
+import MainContent from './components/layout/MainContent';
+import AppRoutes from './routes/AppRoutes';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { FeatureFlagsProvider } from './context/FeatureFlagsContext';
 
 // PUBLIC_INTERFACE
 function App() {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = React.useState('light');
 
-  // Effect to apply theme to document element
-  useEffect(() => {
+  React.useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
+
+  const handleSearch = () => {
+    // placeholder; could push query param into URL
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <FeatureFlagsProvider>
+      <div className="layout">
+        <Header theme={theme} onToggleTheme={toggleTheme} />
+        <Sidebar onSearch={handleSearch} />
+        <MainContent>
+          <ErrorBoundary>
+            <AppRoutes />
+          </ErrorBoundary>
+        </MainContent>
+      </div>
+    </FeatureFlagsProvider>
   );
 }
 
